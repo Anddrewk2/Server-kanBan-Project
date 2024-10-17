@@ -7,6 +7,7 @@ import userRouter from './src/routers/user';
 import cors from 'cors';
 import productRouter from './src/routers/productRouter'
 import { verifyToken } from './src/middlewares/verifyToken';
+import supplierRouter from './src/routers/Supplier'
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -18,6 +19,7 @@ app.use(cors());
 
 app.use('/auth', userRouter);
 app.use('/products' , productRouter)
+app.use('/supplier',supplierRouter)
 app.use(verifyToken);
 
 
