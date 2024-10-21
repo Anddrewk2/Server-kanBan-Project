@@ -14,7 +14,7 @@ export const supplierForm = [
 	},
 	{
 		key: 'email',
-		value: 'Email',
+		value: 'email',
 		label: 'Supplier Email',
 		placeholder: 'Enter supplier Email',
 		type: 'defautl',

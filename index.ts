@@ -18,9 +18,10 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/auth', userRouter);
+app.use(verifyToken)
+
 app.use('/products' , productRouter)
 app.use('/supplier',supplierRouter)
-app.use(verifyToken);
 
 
 const connectDB = async () => {
