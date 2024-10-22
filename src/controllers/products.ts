@@ -170,10 +170,9 @@ const updateCategory = async (req: any, res: any) => {
 // Products
 const addProduct = async (req: any, res: any) => {
 	const body = req.body;
-
 	try {
 		const newProduct = new ProductModel(body);
-
+		console.log(newProduct)
 		await newProduct.save();
 
 		res.status(200).json({
@@ -452,8 +451,7 @@ const filterProducts = async (req: any, res: any) => {
 		];
 	}
 
-	// @bsdaoquang 1 - 20
-	// @daoquang-livecode 20 - nay
+
 
 	try {
 		const subProducts = await SubProductModel.find(filter);
