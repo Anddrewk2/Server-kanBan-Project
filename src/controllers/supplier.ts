@@ -4,7 +4,6 @@
 import SupplierModel from '../models/SupplierModel';
 import { supplierForm } from '../forms/supplier';
 import CategoryModel from '../models/CategortModel';
-import { Console } from 'console';
  
 const getSuppliers = async (req:any , res:any) => {
 	const {pageSize , page } = req.query;
@@ -74,7 +73,6 @@ const addNew = async (req: any, res: any) => {
 	try {
 		const newSupplier = new SupplierModel(body);
 		newSupplier.save();
-		console.log(newSupplier)
 		res.status(200).json({
 			message: 'Add new supplier successfully!!!',
 			data: newSupplier,
@@ -121,31 +119,19 @@ const removeSupplier = async (req: any, res: any) => {
 
 const getForm = async (req: any, res: any) => {
 
-	const categories = await CategoryModel.find({})
-
-	const cateSeletects = categories.map((item: any) => ({label: item._doc.title, value: item._id}))
-
-	const formItems: any = [...supplierForm]
-	const indexCat = formItems.findIndex((element: any) => element.key === 'categories')
-	
-	if (indexCat !== -1) {
-		formItems[indexCat].lookup_items = cateSeletects
-	}
-
-
 	try {
 		const form = {
 			title: 'Supplier',
 			layout: 'horizontal',
 			labelCol: 6,
 			wrapperCol: 18,
-			formItems: formItems,
+			formItems: supplierForm,
 		};
 
 		res.status(200).json({
 			message: '',
 			data: form,
-		});
+		});	
 	} catch (error: any) {
 		res.status(400).json({
 			message: error.message,

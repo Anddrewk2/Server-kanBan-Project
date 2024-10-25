@@ -10,8 +10,8 @@ const supplierScheme = new Schema({
 	},
 	slug: String,
 	product: String,
-	categories: [String],
 	price: Number,
+	quanlity: Number,
 	contact: String,
 	isTaking: {
 		type: Number,
