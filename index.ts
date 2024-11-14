@@ -10,6 +10,7 @@ import { verifyToken } from './src/middlewares/verifyToken';
 import supplierRouter from './src/routers/Supplier'
 import categoriesRouter from './src/routers/categoriesRouter';
 import customerRouter from './src/routers/customerRouter';
+import promotinRouter from './src/routers/promotionRouter';
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -29,6 +30,7 @@ app.use('/customers', customerRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoriesRouter);
 app.use(verifyToken);
+app.use('/promotions',promotinRouter)
 app.use('/supplier', supplierRouter);
 
 const connectDB = async () => {
