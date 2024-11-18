@@ -5,6 +5,7 @@ import {
 	addProduct,
 	addSubProduct,
 	filterProducts,
+	getBestSellers,
 	getFilterValues,
 	getProductDetail,
 	getProducts,
@@ -23,7 +24,7 @@ router.get('/get-filter-values', getFilterValues);
 
 
 router.use(verifyToken);
-
+router.use('/get-best-seller' , getBestSellers)
 router.post('/add-new', addProduct);
 router.post('/add-sub-product', addSubProduct);
 router.delete('/delete', removeProduct);
