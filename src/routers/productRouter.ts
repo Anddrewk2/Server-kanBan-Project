@@ -1,7 +1,5 @@
-
 import { Router } from 'express';
 import {
-	
 	addProduct,
 	addSubProduct,
 	filterProducts,
@@ -21,10 +19,10 @@ const router = Router();
 router.get('/detail', getProductDetail);
 router.get('/', getProducts);
 router.get('/get-filter-values', getFilterValues);
-
+router.get('/get-best-seller', getBestSellers);
 
 router.use(verifyToken);
-router.use('/get-best-seller' , getBestSellers)
+
 router.post('/add-new', addProduct);
 router.post('/add-sub-product', addSubProduct);
 router.delete('/delete', removeProduct);

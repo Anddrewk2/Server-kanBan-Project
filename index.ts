@@ -29,9 +29,10 @@ app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoriesRouter);
+app.use('/supplier', supplierRouter);
+
 app.use(verifyToken);
 app.use('/promotions',promotinRouter)
-app.use('/supplier', supplierRouter);
 
 const connectDB = async () => {
 	try {
