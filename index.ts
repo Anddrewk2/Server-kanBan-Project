@@ -11,6 +11,8 @@ import supplierRouter from './src/routers/Supplier'
 import categoriesRouter from './src/routers/categoriesRouter';
 import customerRouter from './src/routers/customerRouter';
 import promotinRouter from './src/routers/promotionRouter';
+import reviewRouter from './src/routers/ReviewRouter';
+import cartRouter from './src/routers/cartRouter'
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -30,9 +32,10 @@ app.use('/customers', customerRouter);
 app.use('/products', productRouter);
 app.use('/categories', categoriesRouter);
 app.use('/supplier', supplierRouter);
-
+app.use('/reviews', reviewRouter);
 app.use(verifyToken);
 app.use('/promotions',promotinRouter)
+app.use('/carts', cartRouter);
 
 const connectDB = async () => {
 	try {

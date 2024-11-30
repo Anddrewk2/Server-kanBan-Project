@@ -2,7 +2,6 @@ import CategoryModel from "../models/CategortModel";
 import ProductModel from "../models/ProductModel";
 
 
-
 const addCategory = async (req: any, res: any) => {
 	const body = req.body;
 	const { parentId, title, description, slug } = body;
@@ -33,6 +32,7 @@ const addCategory = async (req: any, res: any) => {
 
 const getCategories = async (req: any, res: any) => {
 	const { page, pageSize } = req.query;
+
 	try {
 		const skip = (page - 1) * pageSize;
 
@@ -95,6 +95,8 @@ const findAndRemoveCategoryInProducts = async (id: string) => {
 	// return data;
 };
 
+// @daoquang-livecode
+// @bsdaoquang
 
 const handleRemoveCategoryInProducts = async (id: string) => {
 	await CategoryModel.findByIdAndDelete(id);
@@ -158,5 +160,6 @@ const updateCategory = async (req: any, res: any) => {
 		});
 	}
 };
+
 
 export {updateCategory , addCategory , deleteCategories ,handleRemoveCategoryInProducts,getCategoryDetail , getCategories}

@@ -8,11 +8,14 @@ interface SelectModel {
 	label: string;
 	value: string;
 }
+
+
 const addProduct = async (req: any, res: any) => {
 	const body = req.body;
+
 	try {
 		const newProduct = new ProductModel(body);
-		console.log(newProduct)
+
 		await newProduct.save();
 
 		res.status(200).json({
@@ -27,7 +30,7 @@ const addProduct = async (req: any, res: any) => {
 };
 
 const getProducts = async (req: any, res: any) => {
-	const { page, pageSize, title } = req.query;
+	const { page, pageSize, title, catIds } = req.query;
 
 	await checkDeletedProduct();
 
@@ -39,16 +42,23 @@ const getProducts = async (req: any, res: any) => {
 		filter.slug = { $regex: title };
 	}
 
+	if (catIds) {
+		const categoriesIds = catIds.includes(',') ? catIds.split(',') : [catIds];
+		filter.categories = { $in: categoriesIds };
+	}
+
 	try {
 		const skip = (page - 1) * pageSize;
 
 		const products = await ProductModel.find(filter).skip(skip).limit(pageSize);
+		const count = await ProductModel.find(filter);
 
 		const total = await ProductModel.find({
 			isDeleted: false,
 		});
 
 		const items: any = [];
+		const pageCount = Math.ceil(count.length / pageSize);
 
 		if (products.length > 0) {
 			products.forEach(async (item: any) => {
@@ -59,19 +69,53 @@ const getProducts = async (req: any, res: any) => {
 
 				items.push({
 					...item._doc,
-					subItems: children,
+					subItems: children ?? [],
 				});
 
 				items.length === products.length &&
 					res.status(200).json({
 						message: 'Products',
-						data: { items, totalItems: total.length },
+						data: {
+							items,
+							totalItems: total.length,
+							pageCount,
+						},
 					});
 			});
 		} else {
 			res.status(200).json({
 				message: 'Products',
 				data: [],
+			});
+		}
+	} catch (error: any) {
+		res.status(404).json({
+			message: error.message,
+		});
+	}
+};
+
+const getMinMaxPrice = async (id: string) => {
+	const subItems = await SubProductModel.find({ productId: id });
+
+	const nums = subItems.map((item) => item.price);
+
+	return [Math.min(...nums), Math.max(...nums)];
+};
+
+const getBestSellers = async (req: any, res: any) => {
+	try {
+		const products = await BillProductModel.find();
+
+		if (products.length > 0) {
+		} else {
+			const items = await ProductModel.find().limit(8);
+			const data: any = [];
+
+			items.forEach(async (item: any) => {
+				data.push({ ...item._doc, price: await getMinMaxPrice(item._id) });
+
+				data.length === items.length && res.status(200).json({ data });
 			});
 		}
 	} catch (error: any) {
@@ -128,6 +172,7 @@ const getProductDetail = async (req: any, res: any) => {
 
 const removeSubProduct = async (req: any, res: any) => {
 	const { id, isSoftDelete } = req.query;
+
 	try {
 		if (isSoftDelete) {
 			await SubProductModel.findByIdAndUpdate(id, {
@@ -175,7 +220,6 @@ const addSubProduct = async (req: any, res: any) => {
 			message: 'Add sub product successfully!!!',
 			data: subProduct,
 		});
-		console.log(subProduct)
 	} catch (error: any) {
 		res.status(404).json({
 			message: error.message,
@@ -292,8 +336,6 @@ const filterProducts = async (req: any, res: any) => {
 		];
 	}
 
-
-
 	try {
 		const subProducts = await SubProductModel.find(filter);
 
@@ -337,30 +379,37 @@ const filterProducts = async (req: any, res: any) => {
 		});
 	}
 };
-
-const getMinMaxPrice = async (id: string) => {
-	const subItems = await SubProductModel.find({ productId: id });
-
-	const nums = subItems.map((item) => item.price);
-
-	return [Math.min(...nums), Math.max(...nums)];
-};
-
-const getBestSellers = async (req: any, res: any) => {
+const getRelatedProducts = async (req: any, res: any) => {
+	const { id } = req.query;
 	try {
-		const products = await BillProductModel.find();
+		const product = await ProductModel.findById(id);
 
-		if (products.length > 0) {
-		} else {
-			const items = await ProductModel.find().limit(8);
-			const data: any = [];
-
-			items.forEach(async (item: any) => {
-				data.push({ ...item._doc, price: await getMinMaxPrice(item._id) });
-
-				data.length === items.length && res.status(200).json({ data });
-			});
+		if (!product) {
+			throw new Error('Product not found');
 		}
+
+		const categoryId =
+			product.categories && product.categories.length > 0
+				? product.categories[0]
+				: undefined;
+
+		if (!categoryId) {
+			throw new Error('Categories not found!');
+		}
+
+		const items = await ProductModel.find({ categories: { $in: categoryId } });
+
+		const datas = items.length > 4 ? items.splice(0, 4) : items;
+
+		const products: any = [];
+
+		datas.forEach(async (item: any) => {
+			products.push({ ...item._doc, price: await getMinMaxPrice(item._id) });
+
+			products.length === datas.length &&
+				res.status(200).json({ data: products });
+		});
+		// res.status(200).json({ data: products });
 	} catch (error: any) {
 		res.status(404).json({
 			message: error.message,
@@ -380,5 +429,5 @@ export {
 	removeSubProduct,
 	updateSubProduct,
 	getBestSellers,
-	getMinMaxPrice,
+	getRelatedProducts,
 };
