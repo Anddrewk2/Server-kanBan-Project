@@ -24,6 +24,9 @@ const scheme = new Schema({
 	qty: Number,
 	productId: String,
 	title: String,
+	grandTotal: {
+		type: Number,
+	}
 });
 
 const CartModel = mongoose.model('carts', scheme);

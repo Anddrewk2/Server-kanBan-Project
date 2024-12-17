@@ -10,6 +10,7 @@ import {
 	removeCartItem,
 	updateAddress,
 	updateProductInCart,
+	clearCardByUser,
 } from '../controllers/cartController';
 
 const router = Router();
@@ -22,5 +23,6 @@ router.post('/add-new-address', addNewAddress);
 router.get('/get-address', getAddressByUser);
 router.delete('/remove-address', deleteAddress);
 router.put('/update-address', updateAddress);
+router.get('/clear-carts',clearCardByUser)
 
 export default router;

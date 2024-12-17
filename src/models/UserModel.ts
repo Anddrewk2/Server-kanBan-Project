@@ -28,7 +28,10 @@ const UserScheme = new Schema({
 		type: Date,
 		default: Date.now(),
 	},
-});
+	address: String,
+},
+{ timestamps: true }
+);
 
 const UserModel = mongoose.model('users', UserScheme);
 export default UserModel;

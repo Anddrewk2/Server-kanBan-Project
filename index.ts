@@ -12,7 +12,9 @@ import categoriesRouter from './src/routers/categoriesRouter';
 import customerRouter from './src/routers/customerRouter';
 import promotinRouter from './src/routers/promotionRouter';
 import reviewRouter from './src/routers/ReviewRouter';
-import cartRouter from './src/routers/cartRouter'
+import cartRouter from './src/routers/cartRouter';
+import paymentRouter from './src/routers/paymentRouter'
+import orderRouter from './src/routers/orderRouter'
 dotenv.config();
 
 const PORT = process.env.PORT || 3001;
@@ -26,7 +28,7 @@ app.use((req, res, next) => {
 	res.header('Access-Control-Allow-Headers', 'Content-Type');
 	next();
 });
-
+app.use(express.urlencoded({ extended: true }));
 app.use('/auth', userRouter);
 app.use('/customers', customerRouter);
 app.use('/products', productRouter);
@@ -36,6 +38,8 @@ app.use('/reviews', reviewRouter);
 app.use(verifyToken);
 app.use('/promotions',promotinRouter)
 app.use('/carts', cartRouter);
+app.use('/stripe', paymentRouter);
+app.use('/order', orderRouter)
 
 const connectDB = async () => {
 	try {
