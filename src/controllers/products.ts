@@ -31,35 +31,26 @@ const addProduct = async (req: any, res: any) => {
 
 const getProducts = async (req: any, res: any) => {
 	const { page, pageSize, title, catIds } = req.query;
-
 	await checkDeletedProduct();
-
 	const filter: any = {};
-
 	filter.isDeleted = false;
-
 	if (title) {
 		filter.slug = { $regex: title };
 	}
-
 	if (catIds) {
 		const categoriesIds = catIds.includes(',') ? catIds.split(',') : [catIds];
 		filter.categories = { $in: categoriesIds };
 	}
-
 	try {
 		const skip = (page - 1) * pageSize;
-
 		const products = await ProductModel.find(filter).skip(skip).limit(pageSize);
 		const count = await ProductModel.find(filter);
 
 		const total = await ProductModel.find({
 			isDeleted: false,
 		});
-
 		const items: any = [];
 		const pageCount = Math.ceil(count.length / pageSize);
-
 		if (products.length > 0) {
 			products.forEach(async (item: any) => {
 				const children = await SubProductModel.find({
@@ -311,18 +302,14 @@ const getFilterValues = async (req: any, res: any) => {
 
 const filterProducts = async (req: any, res: any) => {
 	const body = req.body;
-
 	const { colors, size, price, categories } = body;
 	let filter: any = {};
-
 	if (colors && colors.length > 0) {
 		filter.color = { $all: colors };
 	}
-
 	if (size) {
 		filter.size = { $eq: size };
 	}
-
 	if (price && price.length > 0) {
 		filter['$and'] = [
 			{
@@ -335,7 +322,6 @@ const filterProducts = async (req: any, res: any) => {
 			},
 		];
 	}
-
 	try {
 		const subProducts = await SubProductModel.find(filter);
 
@@ -379,43 +365,7 @@ const filterProducts = async (req: any, res: any) => {
 		});
 	}
 };
-const getRelatedProducts = async (req: any, res: any) => {
-	const { id } = req.query;
-	try {
-		const product = await ProductModel.findById(id);
 
-		if (!product) {
-			throw new Error('Product not found');
-		}
-
-		const categoryId =
-			product.categories && product.categories.length > 0
-				? product.categories[0]
-				: undefined;
-
-		if (!categoryId) {
-			throw new Error('Categories not found!');
-		}
-
-		const items = await ProductModel.find({ categories: { $in: categoryId } });
-
-		const datas = items.length > 4 ? items.splice(0, 4) : items;
-
-		const products: any = [];
-
-		datas.forEach(async (item: any) => {
-			products.push({ ...item._doc, price: await getMinMaxPrice(item._id) });
-
-			products.length === datas.length &&
-				res.status(200).json({ data: products });
-		});
-		// res.status(200).json({ data: products });
-	} catch (error: any) {
-		res.status(404).json({
-			message: error.message,
-		});
-	}
-};
 
 export {
 	getProducts,
@@ -428,6 +378,5 @@ export {
 	filterProducts,
 	removeSubProduct,
 	updateSubProduct,
-	getBestSellers,
-	getRelatedProducts,
+	getBestSellers
 };
